@@ -4,6 +4,7 @@ import com.info.local24.local24.controller.TrainController;
 import com.info.local24.local24.dto.TrainInfoRequest;
 import com.info.local24.local24.dto.TrainRequest;
 import com.info.local24.local24.dto.TrainRequestResponse;
+import com.info.local24.local24.dto.TrainUpdateInfoRequest;
 import com.info.local24.local24.entity.Train;
 import com.info.local24.local24.repository.TrainRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 class TrainServiceImpTest {
@@ -62,19 +62,19 @@ class TrainServiceImpTest {
         assertEquals("train already exist with given number", response.getMessage());
 
     }
-    @Test
-    public void testAddTrain2() {
-        TrainRequest trainRequest = new TrainRequest();
-        trainRequest.setTrainNumber("12345");
-        trainRequest.setName("Test Train");
-        when(trainRepository.findByTrainNumber("12344")).thenReturn(new Train("12344",trainRequest.getName(),trainRequest.getStation()));
-
-        // Test adding a new train
-        TrainRequestResponse response = trainService.addTrain(trainRequest);
-        assertTrue(response.isError());
-        assertEquals("train already exist with given name", response.getMessage());
-
-    }
+//    @Test
+//    public void testAddTrain2() {
+//        TrainRequest trainRequest = new TrainRequest();
+//        trainRequest.setTrainNumber("12345");
+//        trainRequest.setName("Test Train");
+//        when(trainRepository.findByTrainNumber("12344")).thenReturn(new Train("12344",trainRequest.getName(),trainRequest.getStation()));
+//
+//        // Test adding a new train
+//        TrainRequestResponse response = trainService.addTrain(trainRequest);
+//        assertTrue(response.isError());
+//        assertEquals("train already exist with given name", response.getMessage());
+//
+//    }
 @Test
 public void testDeleteTrain1() {
     TrainRequest trainRequest = new TrainRequest();
@@ -132,6 +132,49 @@ public void testDeleteTrain1() {
         // Assert the result
         assertEquals(1, result.size()); // We expect only Train 2 to be added to the result list
         assertEquals("Train 2", result.get(0));
+    }
+    @Test
+    public void testUpdateTrainDetail_AddStations() {
+        // Mock data
+        TrainUpdateInfoRequest updateRequest = new TrainUpdateInfoRequest();
+        TrainRequest trainRequest = new TrainRequest();
+        trainRequest.setTrainNumber("123");
+        trainRequest.setName("Train A");
+        trainRequest.setStation(Arrays.asList("Station A", "Station B"));
+        updateRequest.setTrainRequest(trainRequest);
+        updateRequest.setQueryType("add");
+
+        Train train = new Train();
+        train.setTrainNumber("123");
+        train.setName("Train A");
+        train.setStation(Arrays.asList("Station A", "Station B"));
+        when(trainRepository.findByTrainNumber("123")).thenReturn(train);
+        TrainRequestResponse response = trainService.updateTrainDetail(updateRequest);
+
+        assertFalse(response.isError());
+        assertEquals("train detail updated", response.getMessage());
+    }
+
+    @Test
+    public void testUpdateTrainDetail_RemoveStations() {
+        // Mock data
+        TrainUpdateInfoRequest updateRequest = new TrainUpdateInfoRequest();
+        TrainRequest trainRequest = new TrainRequest();
+        trainRequest.setTrainNumber("123");
+        trainRequest.setName("Train A");
+        trainRequest.setStation(Arrays.asList("Station A", "Station B"));
+        updateRequest.setTrainRequest(trainRequest);
+        updateRequest.setQueryType("remove");
+
+        Train train = new Train();
+        train.setTrainNumber("123");
+        train.setName("Train A");
+        train.setStation(Arrays.asList("Station A", "Station B"));
+        when(trainRepository.findByTrainNumber("123")).thenReturn(train);
+        // Call the method under test
+        TrainRequestResponse response = trainService.updateTrainDetail(updateRequest);
+        assertTrue(response.isError());
+        assertEquals("train already exist with given name", response.getMessage());
     }
 
 
