@@ -1,10 +1,7 @@
 package com.info.local24.local24.dto;
-
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @NoArgsConstructor
 @Data
 @AllArgsConstructor
